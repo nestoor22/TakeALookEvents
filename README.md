@@ -1,4 +1,4 @@
 # TakeALookEvents
-Python/FastAPI/MongoDB/React
+Tech stack: Python/FastAPI/MongoDB/React
 
 Microservice for TakeALookWebsite
