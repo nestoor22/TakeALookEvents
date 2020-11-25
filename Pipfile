@@ -8,6 +8,8 @@ verify_ssl = true
 [packages]
 fastapi = "==0.61.1"
 uvicorn = "==0.11.8"
+python-dotenv = "*"
+motor = "*"
 
 [requires]
 python_version = "3.8"
