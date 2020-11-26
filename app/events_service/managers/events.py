@@ -48,3 +48,16 @@ class OpenEvent(Event):
 
     def delete(self):
         pass
+
+
+class PrivateEvent(Event):
+    email_service = PrivateEventEmailService
+
+    def create(self):
+        pass
+
+    def update(self):
+        pass
+
+    def delete(self):
+        pass
