@@ -1,15 +1,11 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-from app.events_service.email_services.base import BaseEventsEmailService
-from app.events_service.email_services.private_event_email_service \
-    import PrivateEventEmailService
-from app.events_service.email_services.open_event_email_service \
-    import OpenEventEmailService
+from ..database import EventsCollectionOperations
 
 
 class Event(ABC):
-    email_service = BaseEventsEmailService
+    db_collection = EventsCollectionOperations
 
     def __init__(self, info: dict):
         self.event_info = info
@@ -33,12 +29,8 @@ class Event(ABC):
         self.event_info['participants'] = participants
         return self.event_info['participants']
 
-    def send_invatation_to_join(self, resipients_info: List[dict]) -> None:
-        self.email_service().send_invatation_to_join(resipients_info)
-
 
 class OpenEvent(Event):
-    email_service = OpenEventEmailService
 
     def create(self):
         pass
@@ -51,7 +43,6 @@ class OpenEvent(Event):
 
 
 class PrivateEvent(Event):
-    email_service = PrivateEventEmailService
 
     def create(self):
         pass
