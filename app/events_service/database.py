@@ -1,4 +1,7 @@
-from motor.motor_asyncio import AsyncIOMotorClient
+from bson import ObjectId
+
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
+
 from app.config import get_config
 
 config = get_config()
@@ -31,21 +34,31 @@ class MongoDBConnection(metaclass=Singleton):
 
 class EventsCollectionOperations:
     def __init__(self):
-        self.collection = MongoDBConnection().get_collection('events')
+        self.collection: AsyncIOMotorCollection = \
+            MongoDBConnection().get_collection('events')
 
-    async def get_event(self, event_id: int) -> dict:
-        event = await self.collection.find_one({"id": event_id})
+    async def get_event(self, event_id: str) -> dict:
+        event = await self.collection.find_one({"_id": ObjectId(event_id)})
         if event:
+            event["id"] = str(event.pop("_id", ''))
             return event
 
         return {}
+
+    async def get_all_events(self):
+        events = []
+        async for event in self.collection.find({}):
+            event["id"] = str(event.pop("_id", ''))
+            events.append(event)
+
+        return events
 
     async def add_event(self, event_data: dict) -> bool:
         await self.collection.insert_one(event_data)
         return True
 
     async def update_event(self, event_data: dict) -> bool:
-        event_id = event_data.get('id', '')
+        event_id = event_data['id']
         if not event_id:
             return False
 
