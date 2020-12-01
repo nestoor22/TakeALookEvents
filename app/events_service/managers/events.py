@@ -1,26 +1,24 @@
-from abc import ABC, abstractmethod
+from uuid import uuid4
 from typing import List
 
 from ..database import EventsCollectionOperations
 
 
-class Event(ABC):
+class Event:
     db_collection = EventsCollectionOperations
 
     def __init__(self, info: dict):
         self.event_info = info
 
-    @abstractmethod
-    def create(self):
-        raise NotImplemented()
+    async def create(self):
+        self.event_info['_id'] = uuid4()
+        return await self.db_collection().add_event(self.event_info)
 
-    @abstractmethod
-    def update(self):
-        raise NotImplemented()
+    async def update(self):
+        return await self.db_collection().update_event(self.event_info)
 
-    @abstractmethod
-    def delete(self):
-        raise NotImplemented()
+    async def delete(self, event_id: str) -> bool:
+        return await self.db_collection().delete_event(event_id)
 
     def get_events_participants(self) -> List[str]:
         return self.event_info['participants']
@@ -28,27 +26,3 @@ class Event(ABC):
     def set_events_participants(self, participants: List[str]) -> List[str]:
         self.event_info['participants'] = participants
         return self.event_info['participants']
-
-
-class OpenEvent(Event):
-
-    def create(self):
-        pass
-
-    def update(self):
-        pass
-
-    def delete(self):
-        pass
-
-
-class PrivateEvent(Event):
-
-    def create(self):
-        pass
-
-    def update(self):
-        pass
-
-    def delete(self):
-        pass

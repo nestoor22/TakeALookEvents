@@ -1,7 +1,10 @@
 from datetime import date, time
 from fastapi import APIRouter
+from fastapi.encoders import jsonable_encoder
+
 
 from .models import EventModel
+from app.events_service.managers.events import Event
 
 router = APIRouter()
 
@@ -25,8 +28,8 @@ async def get_event(event_id: int):
     }
 
 
-@router.post("/events/", response_model=EventModel)
+@router.post("/events/")
 async def create_event(event: EventModel):
-    item_dict = event.dict()
-    print(item_dict)
-    return item_dict
+    transformed_event = jsonable_encoder(event)
+    success = await Event(transformed_event).create()
+    return {"success": success}

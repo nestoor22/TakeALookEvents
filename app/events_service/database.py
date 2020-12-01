@@ -17,7 +17,9 @@ class Singleton(type):
 
 
 class MongoDBConnection(metaclass=Singleton):
-    MONGO_DETAILS = f'mongodb://{config.DATABASE_HOST}:{config.DATABASE_PORT}'
+    MONGO_DETAILS = \
+        f'mongodb://{config.DATABASE_USER}:{config.DATABASE_PASSWORD}@' \
+        f'{config.DATABASE_HOST}:{config.DATABASE_PORT}'
 
     def __init__(self):
         self.client = AsyncIOMotorClient(self.MONGO_DETAILS)
@@ -47,20 +49,20 @@ class EventsCollectionOperations:
         if not event_id:
             return False
 
-        event = await self.collection.find_one({"id": event_id})
+        event = await self.collection.find_one({"_id": event_id})
         if event:
             new_event = await self.collection.update_one(
-                {"id": event_id}, {'$set': event_data})
+                {"_id": event_id}, {'$set': event_data})
             if new_event:
                 return True
             return False
 
         return False
 
-    async def delete_event(self, event_id: int) -> bool:
-        event = await self.collection.find_one({"id": event_id})
+    async def delete_event(self, event_id: str) -> bool:
+        event = await self.collection.find_one({"_id": event_id})
         if event:
-            await self.collection.delete_one({"id": event_id})
+            await self.collection.delete_one({"_id": event_id})
             return True
 
         return False

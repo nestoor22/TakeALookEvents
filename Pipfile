@@ -11,6 +11,7 @@ uvicorn = "==0.11.8"
 python-dotenv = "*"
 motor = "*"
 pydantic = {extras = ["email"],version = "*"}
+pika = "*"
 
 [requires]
 python_version = "3.8"
